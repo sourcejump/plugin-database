@@ -66,7 +66,7 @@ public Plugin myinfo =
 	name = "SourceJump Database",
 	author = "shavit",
 	description = "Provides SourceJump with a database of bhop world records.",
-	version = "1.1",
+	version = "1.2.0",
 	url = "https://github.com/shavitush/SourceJump"
 };
 
