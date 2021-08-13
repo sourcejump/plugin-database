@@ -51,6 +51,7 @@ Handle gH_bTimesTimer = null;
 ConVar gCV_PublicIP = null;
 char gS_AuthKey[64];
 ConVar gCV_Authentication = null;
+ConVar sv_cheats = null;
 
 // SteamIDs which can fetch records from the server
 int gI_SteamIDWhitelist[] =
@@ -124,6 +125,8 @@ public void OnPluginStart()
 	gCV_Authentication = CreateConVar("sourcejump_private_key", "", "Fill in your SourceJump API access key here. This key can be used to submit records to the database using your server key - abuse will lead to removal.");
 
 	AutoExecConfig();
+
+	sv_cheats = FindConVar("sv_cheats");
 
 	SourceJump_DebugLog("SourceJump database plugin loaded.");
 }
@@ -370,6 +373,14 @@ void SendCurrentWR(char[] sMap, char[] sSteamID, char[] sName, char[] sDate, flo
 	if(!IsPasswordFetched())
 	{
 		LogError("[SourceJump] Attempted to submit world record without initial server check. Record data: %s | %s | %s | %s | %f | %f | %d | %d",
+			sMap, sSteamID, sName, sDate, time, sync, strafes, jumps);
+
+		return;
+	}
+
+	if(sv_cheats.BoolValue)
+	{
+		LogError("[SourceJump] Attempted to submit world record with sv_cheats enabled. Record data: %s | %s | %s | %s | %f | %f | %d | %d",
 			sMap, sSteamID, sName, sDate, time, sync, strafes, jumps);
 
 		return;
