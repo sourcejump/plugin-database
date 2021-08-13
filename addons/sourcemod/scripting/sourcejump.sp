@@ -294,7 +294,6 @@ public Action Timer_bTimesCallback(Handle timer, any data)
 			"WHERE a.Style = 0 AND a.Type = 0 AND m.MapName = '%s' " ...
 			"LIMIT 1;", sMap);
 	}
-
 	else if(gI_TimerVersion == TimerVersion_bTimes2_0)
 	{
 		FormatEx(sQuery, sizeof(sQuery),
@@ -526,7 +525,6 @@ public void Callback_OnContact(HTTPResponse response, any value)
 		SourceJump_DebugLog("Callback_OnContact: Sending list of records to SJ server!");
 		SendListOfRecords();
 	}
-
 	else
 	{
 		SourceJump_DebugLog("Callback_OnContact: Server does not want a list of records from us.");
@@ -700,7 +698,6 @@ Database GetTimerDatabaseHandle()
 			SetFailState("SourceJump plugin startup failed. Reason: %s", sError);
 		}
 	}
-
 	else
 	{
 		db = SQLite_UseDatabase("shavit", sError, sizeof(sError));
@@ -756,7 +753,6 @@ int Crypt_Base64Encode(const char[] sString, char[] sResult, int len, int source
 	{
 		nLength = sourcelen;
 	}
-
 	else
 	{
 		nLength = strlen(sString);
@@ -788,7 +784,6 @@ int Crypt_Base64Encode(const char[] sString, char[] sResult, int len, int source
 
 			resPos += FormatEx(sResult[resPos], len - resPos, "%c", base64_sTable[cCode]);
 		}
-
 		else
 		{
 			nPos++;
@@ -800,7 +795,6 @@ int Crypt_Base64Encode(const char[] sString, char[] sResult, int len, int source
 			cCode = sString[nPos] & 0x3f;
 			resPos += FormatEx(sResult[resPos], len - resPos, "%c", base64_sTable[cCode]);
 		}
-
 		else
 		{
 			resPos += FormatEx(sResult[resPos], len - resPos, "%c", base64_cFillChar);
