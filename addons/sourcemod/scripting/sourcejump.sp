@@ -7,7 +7,8 @@
 #pragma newdecls required
 #pragma semicolon 1
 
-forward void Shavit_OnWorldRecord(int client, int style, float time, int jumps, int strafes, float sync, int track, float oldwr, float oldtime, float perfs);
+native float Shavit_GetWorldRecord(int style, int track);
+forward void Shavit_OnReplaySaved(int client, int style, float time, int jumps, int strafes, float sync, int track, float oldtime, float perfs, float avgvel, float maxvel, int timestamp, bool isbestreplay, bool istoolong, bool iscopy, const char[] replaypath);
 forward void OnTimerFinished_Post(int client, float Time, int Type, int Style, bool tas, bool NewTime, int OldPosition, int NewPosition);
 forward void FuckItHops_OnWorldRecord(int client, int style, float time, int jumps, int strafes, float sync, int track);
 
@@ -67,6 +68,12 @@ public Plugin myinfo =
 	description = "Provides SourceJump with a database of bhop world records.",
 	version = "1.1",
 	url = "https://github.com/shavitush/SourceJump"
+};
+
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
+{
+	MarkNativeAsOptional("Shavit_GetWorldRecord");
+	return APLRes_Success;
 }
 
 public void OnAllPluginsLoaded()
@@ -165,9 +172,14 @@ public Action Command_GetAllWRs(int client, int args)
 	return Plugin_Handled;
 }
 
-public void Shavit_OnWorldRecord(int client, int style, float time, int jumps, int strafes, float sync, int track, float oldwr, float oldtime, float perfs)
+public void Shavit_OnReplaySaved(int client, int style, float time, int jumps, int strafes, float sync, int track, float oldtime, float perfs, float avgvel, float maxvel, int timestamp, bool isbestreplay, bool istoolong, bool iscopy, const char[] replaypath)
 {
 	if(style != 0 || track != 0 || gI_TimerVersion != TimerVersion_shavit)
+	{
+		return;
+	}
+
+	if(time > Shavit_GetWorldRecord(style, track))
 	{
 		return;
 	}
