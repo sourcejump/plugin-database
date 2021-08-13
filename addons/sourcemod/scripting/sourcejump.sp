@@ -282,11 +282,11 @@ public Action Timer_bTimesCallback(Handle timer, any data)
 	char sMap[64];
 	hPack.ReadString(sMap, 64);
 
-	char sQuery[512];
+	char sQuery[1024];
 
 	if(gI_TimerVersion == TimerVersion_bTimes1_8_3)
 	{
-		FormatEx(sQuery, 512,
+		FormatEx(sQuery, 1024,
 			"SELECT m.MapName, u.SteamID AS steamid, u.User, a.Time, a.Sync, a.Strafes, a.Jumps, a.Timestamp FROM times a " ...
 			"JOIN (SELECT MIN(Time) time, MapID, Style, Type FROM times GROUP by MapID, Style, Type) b " ...
 			"JOIN (SELECT MapID, MapName FROM maps) m " ...
@@ -297,7 +297,7 @@ public Action Timer_bTimesCallback(Handle timer, any data)
 
 	else if(gI_TimerVersion == TimerVersion_bTimes2_0)
 	{
-		FormatEx(sQuery, 512,
+		FormatEx(sQuery, 1024,
 			"SELECT m.MapName, u.SteamID AS steamid, u.User, a.Time, a.Sync, a.Strafes, a.Jumps, a.Timestamp FROM times a " ...
 			"JOIN (SELECT MIN(Time) time, MapID, Style, Type, tas FROM times GROUP by MapID, Style, Type, tas) b " ...
 			"JOIN (SELECT MapID, MapName FROM maps) m " ...
