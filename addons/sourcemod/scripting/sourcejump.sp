@@ -82,7 +82,7 @@ public void OnAllPluginsLoaded()
 	}
 
 	char sError[255];
-	strcopy(gS_MySQLPrefix, 32, "");
+	strcopy(gS_MySQLPrefix, sizeof(gS_MySQLPrefix), "");
 
 	switch(gI_TimerVersion)
 	{
@@ -91,12 +91,12 @@ public void OnAllPluginsLoaded()
 		case TimerVersion_shavit:
 		{
 			gH_Database = GetTimerDatabaseHandle();
-			GetTimerSQLPrefix(gS_MySQLPrefix, 32);
+			GetTimerSQLPrefix(gS_MySQLPrefix, sizeof(gS_MySQLPrefix));
 		}
 
 		case TimerVersion_bTimes2_0, TimerVersion_bTimes1_8_3:
 		{
-			if((gH_Database = SQL_Connect("timer", true, sError, 255)) == null)
+			if((gH_Database = SQL_Connect("timer", true, sError, sizeof(sError))) == null)
 			{
 				SetFailState("SourceJump plugin startup failed. Reason: %s", sError);
 			}
@@ -104,7 +104,7 @@ public void OnAllPluginsLoaded()
 
 		case TimerVersion_FuckItHops:
 		{
-			if((gH_Database = SQL_Connect("TimerDB65", true, sError, 255)) == null)
+			if((gH_Database = SQL_Connect("TimerDB65", true, sError, sizeof(sError))) == null)
 			{
 				SetFailState("SourceJump plugin startup failed. Reason: %s", sError);
 			}
@@ -170,17 +170,17 @@ public void Shavit_OnWorldRecord(int client, int style, float time, int jumps, i
 	}
 
 	char sMap[64];
-	GetCurrentMap(sMap, 64);
-	GetMapDisplayName(sMap, sMap, 64);
+	GetCurrentMap(sMap, sizeof(sMap));
+	GetMapDisplayName(sMap, sMap, sizeof(sMap));
 
 	char sSteamID[32];
-	GetClientAuthId(client, AuthId_Steam3, sSteamID, 32);
+	GetClientAuthId(client, AuthId_Steam3, sSteamID, sizeof(sSteamID));
 
 	char sName[MAX_NAME_LENGTH];
-	GetClientName(client, sName, MAX_NAME_LENGTH);
+	GetClientName(client, sName, sizeof(sName));
 
 	char sDate[32];
-	FormatTime(sDate, 32, "%Y-%m-%d %H:%M:%S", GetTime());
+	FormatTime(sDate, sizeof(sDate), "%Y-%m-%d %H:%M:%S", GetTime());
 
 	SendCurrentWR(sMap, sSteamID, sName, sDate, time, sync, strafes, jumps);
 }
@@ -193,17 +193,17 @@ public void FuckItHops_OnWorldRecord(int client, int style, float time, int jump
 	}
 
 	char sMap[64];
-	GetCurrentMap(sMap, 64);
-	GetMapDisplayName(sMap, sMap, 64);
+	GetCurrentMap(sMap, sizeof(sMap));
+	GetMapDisplayName(sMap, sMap, sizeof(sMap));
 
 	char sSteamID[32];
-	GetClientAuthId(client, AuthId_Steam3, sSteamID, 32);
+	GetClientAuthId(client, AuthId_Steam3, sSteamID, sizeof(sSteamID));
 
 	char sName[MAX_NAME_LENGTH];
-	GetClientName(client, sName, MAX_NAME_LENGTH);
+	GetClientName(client, sName, sizeof(sName));
 
 	char sDate[32];
-	FormatTime(sDate, 32, "%Y-%m-%d %H:%M:%S", GetTime());
+	FormatTime(sDate, sizeof(sDate), "%Y-%m-%d %H:%M:%S", GetTime());
 
 	SendCurrentWR(sMap, sSteamID, sName, sDate, time, sync, strafes, jumps);
 }
@@ -250,17 +250,17 @@ public void OnTimerFinished_Post(int client, float Time, int Type, int Style, bo
 	// OBVIOUSLY THERE IS NO FUCKING STRAFES/SYNC IN THE FUCKING FORWARD SO WE NEED TO QUERY FOR IT
 	// FUCK YOU TOO BLACKY
 	char sMap[64];
-	GetCurrentMap(sMap, 64);
-	GetMapDisplayName(sMap, sMap, 64);
+	GetCurrentMap(sMap, sizeof(sMap));
+	GetMapDisplayName(sMap, sMap, sizeof(sMap));
 
 	char sSteamID[32];
-	GetClientAuthId(client, AuthId_Steam3, sSteamID, 32);
+	GetClientAuthId(client, AuthId_Steam3, sSteamID, sizeof(sSteamID));
 
 	char sName[MAX_NAME_LENGTH];
-	GetClientName(client, sName, MAX_NAME_LENGTH);
+	GetClientName(client, sName, sizeof(sName));
 
 	char sDate[32];
-	FormatTime(sDate, 32, "%Y-%m-%d %H:%M:%S", GetTime());
+	FormatTime(sDate, sizeof(sDate), "%Y-%m-%d %H:%M:%S", GetTime());
 
 	DataPack hPack = new DataPack();
 	hPack.WriteString(sMap);
@@ -280,13 +280,13 @@ public Action Timer_bTimesCallback(Handle timer, any data)
 	hPack.Reset();
 
 	char sMap[64];
-	hPack.ReadString(sMap, 64);
+	hPack.ReadString(sMap, sizeof(sMap));
 
 	char sQuery[1024];
 
 	if(gI_TimerVersion == TimerVersion_bTimes1_8_3)
 	{
-		FormatEx(sQuery, 1024,
+		FormatEx(sQuery, sizeof(sQuery),
 			"SELECT m.MapName, u.SteamID AS steamid, u.User, a.Time, a.Sync, a.Strafes, a.Jumps, a.Timestamp FROM times a " ...
 			"JOIN (SELECT MIN(Time) time, MapID, Style, Type FROM times GROUP by MapID, Style, Type) b " ...
 			"JOIN (SELECT MapID, MapName FROM maps) m " ...
@@ -297,7 +297,7 @@ public Action Timer_bTimesCallback(Handle timer, any data)
 
 	else if(gI_TimerVersion == TimerVersion_bTimes2_0)
 	{
-		FormatEx(sQuery, 1024,
+		FormatEx(sQuery, sizeof(sQuery),
 			"SELECT m.MapName, u.SteamID AS steamid, u.User, a.Time, a.Sync, a.Strafes, a.Jumps, a.Timestamp FROM times a " ...
 			"JOIN (SELECT MIN(Time) time, MapID, Style, Type, tas FROM times GROUP by MapID, Style, Type, tas) b " ...
 			"JOIN (SELECT MapID, MapName FROM maps) m " ...
@@ -319,16 +319,16 @@ public void SQL_GetCurrentWR_Callback(Database db, DBResultSet results, const ch
 	hPack.Reset();
 
 	char sMap[64];
-	hPack.ReadString(sMap, 64);
+	hPack.ReadString(sMap, sizeof(sMap));
 
 	char sSteamID[32];
-	hPack.ReadString(sSteamID, 32);
+	hPack.ReadString(sSteamID, sizeof(sSteamID));
 
 	char sName[MAX_NAME_LENGTH];
-	hPack.ReadString(sName, MAX_NAME_LENGTH);
+	hPack.ReadString(sName, sizeof(sName));
 
 	char sDate[32];
-	hPack.ReadString(sDate, 32);
+	hPack.ReadString(sDate, sizeof(sDate));
 
 	delete hPack;
 
@@ -398,28 +398,28 @@ void SendCurrentWR(char[] sMap, char[] sSteamID, char[] sName, char[] sDate, flo
 	{
 		case TimerVersion_shavit:
 		{
-			BuildPath(Path_SM, sPath, PLATFORM_MAX_PATH, "data/replaybot/0/%s.replay", sMap);
+			BuildPath(Path_SM, sPath, sizeof(sPath), "data/replaybot/0/%s.replay", sMap);
 		}
 
 		case TimerVersion_bTimes1_8_3:
 		{
-			BuildPath(Path_SM, sPath, PLATFORM_MAX_PATH, "data/btimes/%s_0_0.rec", sMap);
+			BuildPath(Path_SM, sPath, sizeof(sPath), "data/btimes/%s_0_0.rec", sMap);
 		}
 
 		case TimerVersion_bTimes2_0:
 		{
-			BuildPath(Path_SM, sPath, PLATFORM_MAX_PATH, "data/btimes/%s_0_0_0.txt", sMap);
+			BuildPath(Path_SM, sPath, sizeof(sPath), "data/btimes/%s_0_0_0.txt", sMap);
 		}
 
 		case TimerVersion_FuckItHops:
 		{
 			// format: no header. read 6 cells at once. x/y/z yaw/pitch buttons. until eof
 			char sSteamIDCopy[32];
-			strcopy(sSteamIDCopy, 32, sSteamID);
-			ReplaceString(sSteamIDCopy, 32, "[U:1:", "");
-			ReplaceString(sSteamIDCopy, 32, "]", "");
+			strcopy(sSteamIDCopy, sizeof(sSteamIDCopy), sSteamID);
+			ReplaceString(sSteamIDCopy, sizeof(sSteamIDCopy), "[U:1:", "");
+			ReplaceString(sSteamIDCopy, sizeof(sSteamIDCopy), "]", "");
 
-			BuildPath(Path_SM, sPath, PLATFORM_MAX_PATH, "data/tTimer/%s/0-0-%d.rec", sMap, StringToInt(sSteamIDCopy));
+			BuildPath(Path_SM, sPath, sizeof(sPath), "data/tTimer/%s/0-0-%d.rec", sMap, StringToInt(sSteamIDCopy));
 		}
 	}
 
@@ -452,16 +452,16 @@ void AddServerToJson(JSONObject data)
 	// Read from configs but remove it instantly from cvar memory so sm_cvar won't see the original value.
 	if(strlen(gS_AuthKey) == 0)
 	{
-		gCV_Authentication.GetString(gS_AuthKey, 64);
+		gCV_Authentication.GetString(gS_AuthKey, sizeof(gS_AuthKey));
 	}
 
 	gCV_Authentication.SetString("");
 
 	char sPublicIP[32];
-	gCV_PublicIP.GetString(sPublicIP, 32);
+	gCV_PublicIP.GetString(sPublicIP, sizeof(sPublicIP));
 
 	char sHostname[128];
-	FindConVar("hostname").GetString(sHostname, 128);
+	FindConVar("hostname").GetString(sHostname, sizeof(sHostname));
 
 	data.SetString("public_ip", sPublicIP);
 	data.SetString("private_key", gS_AuthKey);
@@ -483,7 +483,7 @@ public void Callback_OnGetPassword(HTTPResponse response, any value)
 		return;
 	}
 
-	view_as<JSONObject>(response.Data).GetString("password", gS_PasswordHash, 64);
+	view_as<JSONObject>(response.Data).GetString("password", gS_PasswordHash, sizeof(gS_PasswordHash));
 
 	if(!IsPasswordFetched())
 	{
@@ -508,7 +508,7 @@ public void Callback_OnContact(HTTPResponse response, any value)
 	}
 
 	char sBuffer[255];
-	view_as<JSON>(response.Data).ToString(sBuffer, 255);
+	view_as<JSON>(response.Data).ToString(sBuffer, sizeof(sBuffer));
 
 	bool bWhitelisted = view_as<JSONObject>(response.Data).GetBool("whitelisted");
 
@@ -541,7 +541,7 @@ void SendListOfRecords()
 	{
 		case TimerVersion_shavit:
 		{
-			FormatEx(sQuery, 1024,
+			FormatEx(sQuery, sizeof(sQuery),
 				"SELECT a.map, u.auth AS steamid, u.name, a.time, a.sync, a.strafes, a.jumps, a.date FROM %splayertimes a " ...
 				"JOIN (SELECT MIN(time) time, map, style, track FROM %splayertimes GROUP by map, style, track) b " ...
 				"JOIN %susers u ON a.time = b.time AND a.auth = u.auth AND a.map = b.map AND a.style = b.style AND a.track = b.track " ...
@@ -551,7 +551,7 @@ void SendListOfRecords()
 
 		case TimerVersion_bTimes2_0:
 		{
-			strcopy(sQuery, 1024,
+			strcopy(sQuery, sizeof(sQuery),
 				"SELECT m.MapName, u.SteamID AS steamid, u.User, a.Time, a.Sync, a.Strafes, a.Jumps, a.Timestamp FROM times a " ...
 				"JOIN (SELECT MIN(Time) time, MapID, Style, Type, tas FROM times GROUP by MapID, Style, Type, tas) b " ...
 				"JOIN (SELECT MapID, MapName FROM maps) m " ...
@@ -562,7 +562,7 @@ void SendListOfRecords()
 
 		case TimerVersion_bTimes1_8_3:
 		{
-			strcopy(sQuery, 1024,
+			strcopy(sQuery, sizeof(sQuery),
 				"SELECT m.MapName, u.SteamID AS steamid, u.User, a.Time, a.Sync, a.Strafes, a.Jumps, a.Timestamp FROM times a " ...
 				"JOIN (SELECT MIN(Time) time, MapID, Style, Type FROM times GROUP by MapID, Style, Type) b " ...
 				"JOIN (SELECT MapID, MapName FROM maps) m " ...
@@ -573,7 +573,7 @@ void SendListOfRecords()
 
 		case TimerVersion_FuckItHops:
 		{
-			strcopy(sQuery, 1024,
+			strcopy(sQuery, sizeof(sQuery),
 				"SELECT a.MapName, a.SteamID AS steamid, a.Name, a.Time, a.Sync, a.Strafes, a.Jumps, a.Date FROM timelist a " ...
 				"JOIN (SELECT MIN(Time) Time, MapName FROM timelist WHERE Type = 0 AND Style = 0 GROUP by MapName, Style, Type) b " ...
 				"ON a.Time = b.Time AND a.MapName = b.MapName " ...
@@ -588,11 +588,11 @@ void SendListOfRecords()
 void SteamID2To3(const char[] steam2, char[] buffer, int maxlen)
 {
 	strcopy(buffer, maxlen, steam2);
-	ReplaceString(buffer, 32, "STEAM_0:", "");
-	ReplaceString(buffer, 32, "STEAM_1:", "");
+	ReplaceString(buffer, maxlen, "STEAM_0:", "");
+	ReplaceString(buffer, maxlen, "STEAM_1:", "");
 
 	char sExploded[2][16];
-	ExplodeString(buffer, ":", sExploded, 2, 16, false);
+	ExplodeString(buffer, ":", sExploded, sizeof(sExploded), sizeof(sExploded[]), false);
 
 	int iPrefix = StringToInt(sExploded[0]);
 	int iSteamID = StringToInt(sExploded[1]);
@@ -603,10 +603,10 @@ void SteamID2To3(const char[] steam2, char[] buffer, int maxlen)
 JSONObject GetTimeJsonFromResult(DBResultSet results)
 {
 	char sMap[64];
-	results.FetchString(0, sMap, 64);
+	results.FetchString(0, sMap, sizeof(sMap));
 
 	char sSteamID[32];
-	results.FetchString(1, sSteamID, 32);
+	results.FetchString(1, sSteamID, sizeof(sSteamID));
 
 	switch(gI_TimerVersion)
 	{
@@ -614,13 +614,13 @@ JSONObject GetTimeJsonFromResult(DBResultSet results)
 		{
 			if(StrContains(sSteamID, "[U:1:", false) == -1)
 			{
-				Format(sSteamID, 32, "[U:1:%s]", sSteamID);
+				Format(sSteamID, sizeof(sSteamID), "[U:1:%s]", sSteamID);
 			}
 		}
 
 		case TimerVersion_bTimes1_8_3, TimerVersion_bTimes2_0:
 		{
-			SteamID2To3(sSteamID, sSteamID, 32);
+			SteamID2To3(sSteamID, sSteamID, sizeof(sSteamID));
 		}
 	}
 
@@ -628,7 +628,7 @@ JSONObject GetTimeJsonFromResult(DBResultSet results)
 	results.FetchString(2, sName, MAX_NAME_LENGTH);
 
 	char sDate[32];
-	FormatTime(sDate, 32, "%Y-%m-%d %H:%M:%S", results.FetchInt(7));
+	FormatTime(sDate, sizeof(sDate), "%Y-%m-%d %H:%M:%S", results.FetchInt(7));
 
 	JSONObject hJSON = new JSONObject();
 	hJSON.SetString("map", sMap);
@@ -695,7 +695,7 @@ Database GetTimerDatabaseHandle()
 
 	if(SQL_CheckConfig("shavit"))
 	{
-		if((db = SQL_Connect("shavit", true, sError, 255)) == null)
+		if((db = SQL_Connect("shavit", true, sError, sizeof(sError))) == null)
 		{
 			SetFailState("SourceJump plugin startup failed. Reason: %s", sError);
 		}
@@ -703,7 +703,7 @@ Database GetTimerDatabaseHandle()
 
 	else
 	{
-		db = SQLite_UseDatabase("shavit", sError, 255);
+		db = SQLite_UseDatabase("shavit", sError, sizeof(sError));
 	}
 
 	return db;
@@ -713,7 +713,7 @@ Database GetTimerDatabaseHandle()
 void GetTimerSQLPrefix(char[] buffer, int maxlen)
 {
 	char sFile[PLATFORM_MAX_PATH];
-	BuildPath(Path_SM, sFile, PLATFORM_MAX_PATH, "configs/shavit-prefix.txt");
+	BuildPath(Path_SM, sFile, sizeof(sFile), "configs/shavit-prefix.txt");
 
 	File fFile = OpenFile(sFile, "r");
 
@@ -724,7 +724,7 @@ void GetTimerSQLPrefix(char[] buffer, int maxlen)
 
 	char sLine[PLATFORM_MAX_PATH * 2];
 
-	if(fFile.ReadLine(sLine, PLATFORM_MAX_PATH * 2))
+	if(fFile.ReadLine(sLine, sizeof(sLine)))
 	{
 		TrimString(sLine);
 		strcopy(buffer, maxlen, sLine);
@@ -818,13 +818,13 @@ void SourceJump_DebugLog(const char[] format, any ...)
 	}
 
 	char sBuffer[300];
-	VFormat(sBuffer, 300, format, 2);
+	VFormat(sBuffer, sizeof(sBuffer), format, 2);
 	LogMessage("[SourceJump] %d | %s", ++gI_DebuggingLog, sBuffer);
 }
 
 void SourceJump_Log(const char[] format, any ...)
 {
 	char sBuffer[300];
-	VFormat(sBuffer, 300, format, 2);
+	VFormat(sBuffer, sizeof(sBuffer), format, 2);
 	LogMessage("[SourceJump] %d | %s", ++gI_DebuggingLog, sBuffer);
 }
